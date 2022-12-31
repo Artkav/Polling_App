@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -133,6 +134,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # add Custom User
 AUTH_USER_MODEL = "polling_auth.User"
 
-# from crispy forms
+# from crispy forms.py
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
