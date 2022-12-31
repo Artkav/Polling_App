@@ -137,3 +137,9 @@ AUTH_USER_MODEL = "polling_auth.User"
 # from crispy forms.py
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# for two-step activation workflow
+ACCOUNT_ACTIVATION_DAYS = 3
+
+REGISTRATION_OPEN = True
+
