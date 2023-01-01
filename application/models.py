@@ -44,3 +44,6 @@ class Vote(models.Model):
     poll = models.ForeignKey(Poll, related_name="votes", on_delete=models.CASCADE)
     choice = models.ForeignKey(Choice, related_name='choices', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.poll}  -  {self.choice}'
