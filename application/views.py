@@ -1,15 +1,30 @@
-from django.shortcuts import render, HttpResponse
-from .models import Poll
+from django.shortcuts import render, HttpResponse, redirect
+from .models import Poll, Choice, Vote
+from django.views.generic import ListView, DetailView, CreateView
+from .forms import PollCustomForm
 
 
 # Create your views here.
 
-def polling_list(request):
-    polls = Poll.objects.all()
+class PollingList(ListView):
+    model = Poll
+    context_object_name = 'polls'
+    template_name = 'application/polling_list.html'
 
-    return render(request, "application/polling_list.html", {"polls": polls})
+
+class PollingDetailView(DetailView):
+    model = Poll
+    template_name = 'application/poll_detail.html'
+    context_object_name = 'poll'
 
 
-def detail_view(request, slug):
-    poll = Poll.objects.get(slug=slug)
-    return render(request, "application/poll_detail.html", {"poll": poll})
+class PollingCreateView(CreateView):
+    model = Poll
+    form_class = PollCustomForm
+    template_name = 'application/poll_create.html'
+
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        instance.author = self.request.user
+        instance.save()
+        return redirect('poll', slug = instance.slug)

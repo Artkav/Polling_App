@@ -1,8 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1> Polling List </h1>
-    {% for poll in polls %}
-        <a href="{% url 'poll' poll.slug %}"> <p>{{ poll.title }}</p> </a>
-    {% endfor %}
 
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <h1> Polling List </h1>
+            {% for poll in polls %}
+                <a href="{% url 'poll' poll.slug %}"> <p>{{ poll.title }}</p> </a>
+
+            {% endfor %}
+
+
+        </div>
+    </div>
 {% endblock %}
