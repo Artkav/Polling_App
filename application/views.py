@@ -19,30 +19,30 @@ class PollingDetailView(DetailView):
     form_class = ChoiceForm
 
 
-class PollingDetailView1(DetailView):
-    def get(self, request, *args, **kwargs):
-        poll = get_object_or_404(Poll, slug=kwargs['slug'])
-        form_1 = ChoiceForm
-        form_2 = CommentForm
-        context = {'form': form_1, 'comment_form': form_2, 'poll': poll}
-        return render(request, 'application/poll_detail.html', context)
-
-    def post(self, request, *args, **kwargs):
-        poll = get_object_or_404(Poll, slug=kwargs['slug'])
-        form_1 = ChoiceForm(request.POST or None)
-        form_2 = CommentForm(request.POST or None)
-        context = {'form': form_1, 'comment_form': form_2, 'poll': poll}
-        if form_1.is_valid():
-            new_choice = form_1.save(commit=False)
-            new_choice.poll = poll
-            new_choice.save()
-
-        if form_2.is_valid():
-            new_comment = form_2.save(commit=False)
-            new_comment.content_object = poll
-            new_comment.creator = request.user
-
-        return render(request, 'application/poll_detail.html', context)
+# class PollingDetailView1(DetailView):
+#     def get(self, request, *args, **kwargs):
+#         poll = get_object_or_404(Poll, slug=kwargs['slug'])
+#         form_1 = ChoiceForm
+#         form_2 = CommentForm
+#         context = {'form': form_1, 'comment_form': form_2, 'poll': poll}
+#         return render(request, 'application/poll_detail.html', context)
+#
+#     def post(self, request, *args, **kwargs):
+#         poll = get_object_or_404(Poll, slug=kwargs['slug'])
+#         form_1 = ChoiceForm(request.POST or None)
+#         form_2 = CommentForm(request.POST or None)
+#         context = {'form': form_1, 'comment_form': form_2, 'poll': poll}
+#         if form_1.is_valid():
+#             new_choice = form_1.save(commit=False)
+#             new_choice.poll = poll
+#             new_choice.save()
+#
+#         if form_2.is_valid():
+#             new_comment = form_2.save(commit=False)
+#             new_comment.content_object = poll
+#             new_comment.creator = request.user
+#
+#         return render(request, 'application/poll_detail.html', context)
 
 
 def detail_view(request, slug):

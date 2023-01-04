@@ -39,10 +39,13 @@ class Choice(models.Model):
     def __str__(self):
         return self.choice_text
 
+    def get_percentage(self):
+        return int(100 * self.votes.count()/(self.poll.votes.count())) if self.poll.votes.count() else 0
+
 
 class Vote(models.Model):
     poll = models.ForeignKey(Poll, related_name="votes", on_delete=models.CASCADE)
-    choice = models.ForeignKey(Choice, related_name='choices', on_delete=models.CASCADE)
+    choice = models.ForeignKey(Choice, related_name='votes', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):

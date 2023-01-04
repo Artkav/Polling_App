@@ -10,7 +10,19 @@
             <p> {{ poll.text }} </p>
             <h2>Choices</h2>
             {% for choice in poll.choices.all %}
-                <p> {{ choice }} </p>
+                <p> {{ choice }}    {{ choice.get_percentage }}% </p>
+                <div class="progress">
+                  <div class="progress-bar bg-info"
+                       role="progressbar"
+                       aria-label="Info example"
+                       style="width: {{ choice.get_percentage }}%"
+                       aria-valuenow="{{ choice.get_percentage }}"
+                       aria-valuemin="0"
+                       aria-valuemax="100">
+
+                  </div>
+                </div>
+
             {% endfor %}
 
             <form method="post">
