@@ -2,9 +2,15 @@ from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from .models import Poll, Choice, Vote
 from django.views.generic import ListView, DetailView, CreateView
 from .forms import PollCustomForm, ChoiceForm, CommentForm
+from django.contrib.auth import logout
 
 
 # Create your views here.
+
+def logout_view(request):
+    logout(request)
+    return redirect('poll_list')
+
 
 class PollingList(ListView):
     model = Poll
@@ -46,29 +52,45 @@ class PollingDetailView(DetailView):
 
 
 def detail_view(request, slug):
+    user_can_vote = True
     poll = get_object_or_404(Poll, slug=slug)
-    choice_form = ChoiceForm()
-    comment_form = CommentForm()
-    if request.method == "POST":
+    if request.user == poll.author:
         choice_form = ChoiceForm(request.POST)
+    else:
+        choice_form = None
+    if request.user.is_anonymous:
+        comment_form = None
+    else:
         comment_form = CommentForm(request.POST)
-        if choice_form.is_valid():
-            choice = choice_form.save(commit=False)
-            choice.poll = poll
-            choice.save()
-            return redirect(request.path_info)
+    if request.method == "POST":
+        if request.user == poll.author:
+            choice_form = ChoiceForm(request.POST)
+            if choice_form.is_valid():
+                choice = choice_form.save(commit=False)
+                choice.poll = poll
+                choice.save()
+                return redirect(request.path_info)
+        else:
+            choice_form = None
+        if request.user.is_anonymous:
+            comment_form = None
+        else:
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                comment = comment_form.save(commit=False)
+                comment.content_object = poll
+                comment.creator = request.user
+                comment.save()
+                return redirect(request.path_info)
 
-        if comment_form.is_valid():
-            comment = comment_form.save(commit=False)
-            comment.content_object = poll
-            comment.creator = request.user
-            comment.save()
-            return redirect(request.path_info)
-
+    for vote in poll.votes.all():
+        if vote.user == request.user:
+            user_can_vote = False
     return render(request, "application/poll_detail.html", {
             "poll": poll,
             "form": choice_form,
-            "comment_form": comment_form
+            "comment_form": comment_form,
+            "user_can_vote": user_can_vote
     })
 
 
@@ -84,10 +106,12 @@ class PollingCreateView(CreateView):
         return redirect('poll', slug=instance.slug)
 
 
-def create_vote(request, slug, choice):
-    poll = get_object_or_404(Poll, slug=slug)
-    voting_users = []
-    for vote in poll.votes.all:
-        voting_users.append(vote.user)
-    print(voting_users)
+def create_vote(request, slug, pk):
+
+    new_vote = Vote()
+    new_vote.poll = Poll.objects.get(slug=slug)
+    new_vote.choice = Choice.objects.get(pk=pk)
+    new_vote.user = request.user
+    new_vote.save()
+    return redirect('poll', slug=slug)
 

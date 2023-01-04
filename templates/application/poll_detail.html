@@ -4,13 +4,27 @@
 
 
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-10">
 
             <h1> {{ poll.title }} </h1>
+            <h4> Created by {{ poll.author }} </h4>
             <p> {{ poll.text }} </p>
+            <h8>Voted for this choice</h8>
+                {% for vote in poll.votes.all %}
+                    <p> {{ vote.user }} </p>
+                {% endfor %}
             <h2>Choices</h2>
+            <hr>
             {% for choice in poll.choices.all %}
-                <p> {{ choice }}    {{ choice.get_percentage }}% </p>
+                <p>
+                    {{ choice }}    {{ choice.get_percentage }}%
+
+                    {% if user_can_vote and user.is_authenticated %}
+                        <a class="btn btn-primary" href="{% url 'vote' poll.slug choice.id %}">Vote</a>
+                    {% endif %}
+
+                </p>
+
                 <div class="progress">
                   <div class="progress-bar bg-info"
                        role="progressbar"
@@ -22,39 +36,47 @@
 
                   </div>
                 </div>
+                <hr>
+                <hr>
 
             {% endfor %}
 
-            <form method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type="submit" class="btn btn-primary">Create</button>
-            </form>
+            {% if user == poll.author %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </form>
+            {% endif %}
+
         </div>
     </div>
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-10">
 
 
             <h2>Comments</h2>
+            <hr>
             {% for comment in poll.comments.all %}
                 <div class="row justify-content-center">
                     <div class="col-md-2">
                         <p> {{ comment.creator }} </p>
                         <p> {{ comment.created_at }} </p>
-
+                        <hr>
                     </div>
-                    <div class="col-md-4">
-                        <p> {{ comment.comment_text }} </p>
+                    <div class="col-md-10">
+                        <p > {{ comment.comment_text }} </p>
                     </div>
                 </div>
             {% endfor %}
+            {% if user.is_authenticated %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ comment_form|crispy }}
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </form>
+            {% endif %}
 
-            <form method="post">
-                {% csrf_token %}
-                {{ comment_form|crispy }}
-                <button type="submit" class="btn btn-primary">Create</button>
-            </form>
         </div>
     </div>
 {% endblock %}
